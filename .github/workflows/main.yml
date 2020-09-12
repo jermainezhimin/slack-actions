@@ -7,7 +7,7 @@ jobs:
     steps:
     - name: Hello world action step
       id: hello
-      uses: jermainezhimin/pullout@v0
+      uses: jermainezhimin/pullout@v0.1
       with:
         who-to-greet: 'Jermaine'
     # Use the output from the `hello` step
