@@ -1,10 +1,18 @@
-name: 'Hello World'
-description: 'Greet someone and record the time'
+name: 'slack-actions'
+description: 'Posts PR notifications to slack'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  slack-bot-token:
+    description: 'API token to post messages to slack'
     required: true
-    default: 'World'
+  channel-id:
+    description: 'Channel that manages PR notifications'
+    required: true
+  action:
+    description: 'Slack action to take'
+    required: true
+  message:
+    description: 'Slack message template'
+    required: true
 outputs:
   time: # id of output
     description: 'The time we greeted you'

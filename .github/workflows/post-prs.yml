@@ -1,0 +1,24 @@
+on: 
+  push:
+    branches:
+      - master
+      - dev
+
+  # pull_request_target:
+  #   types: [ready_for_review, edited, review_requested, review_request_removed]
+
+jobs:
+  post_slack_job:
+    runs-on: ubuntu-latest
+    name: Posting to slack
+    steps:
+    - name: Posting to slack
+      uses: jermainezhimin/slack-actions@v0.1
+      with:
+        slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
+        channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
+        message: | 
+          `:star-struck: New commits in _*dev*_!\n
+          ${payload.commits.map((commit)=>`• [_${commit.author.name}_] <${commit.url}|${commit.message}>\n`)}
+          `
+        action: post
