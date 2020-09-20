@@ -1,11 +1,12 @@
 {
   "name": "slack-actions",
-  "version": "0.1",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint .",
+    "test": "jest"
   },
   "keywords": [],
   "author": "Jermaine Countryman <jermaine.zhimin@gmail.com> (http://jermainecheng.com/)",
@@ -18,10 +19,12 @@
   "devDependencies": {
     "eslint": "7.9.0",
     "eslint-config-airbnb": "18.2.0",
+    "eslint-config-prettier": "6.11.0",
     "eslint-plugin-import": "2.22.0",
     "eslint-plugin-jsx-a11y": "6.3.1",
     "eslint-plugin-prettier": "3.1.4",
     "eslint-plugin-react": "7.20.6",
+    "jest": "26.4.2",
     "prettier": "2.1.1",
     "webpack": "4.44.1",
     "webpack-cli": "3.3.12"

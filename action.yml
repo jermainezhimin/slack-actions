@@ -13,9 +13,9 @@ inputs:
   message:
     description: 'Slack message template'
     required: true
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+string-matcher:
+    description: 'Message string matcher to find first message containing'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

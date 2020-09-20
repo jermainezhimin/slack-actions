@@ -3,37 +3,88 @@ const github = require('@actions/github');
 const core = require('@actions/core');
 
 const POST_ACTION = 'post'
-const EDIT_ACTION = 'edit' 
-const BUMP_ACTION = 'bump'
+const UPDATE_ACTION = 'update' 
+const REPLY_ACTION = 'reply'
 const REACT_ACTION = 'react'
 
 
 const post = async () => {
+  // eslint-disable-next-line no-unused-vars
+  const {payload} = github.context
   const channelId = core.getInput('channel-id');
   const botToken = core.getInput('slack-bot-token');
-  const messages = core.getInput('message');
-  const payload = github.context.payload
+
+  // eslint-disable-next-line no-eval
+  const messages = eval(core.getInput('message'));
 
   const client = new WebClient(botToken);
-  await client.chat.postMessage({ channel: channelId, text: eval(messages) })
+  await client.chat.postMessage({ channel: channelId, text: messages })
 }
 
 
-const edit = async () => {
+const update = async () => {
+    // eslint-disable-next-line no-unused-vars
+  const {payload} = github.context
   const channelId = core.getInput('channel-id');
   const botToken = core.getInput('slack-bot-token');
-  const payload = github.context.payload
+
+  // eslint-disable-next-line no-eval
+  const stringMatcher = eval(core.getInput('string-matcher'));
+  // eslint-disable-next-line no-eval
+  const messages = eval(core.getInput('message'));
 
   const client = new WebClient(botToken);
   const conversations = await client.conversations.history({ token: botToken, channel: channelId })
-  const message = conversations.messages.find((message)=> message.text.includes(payload.pull_request.url))
+  const message = conversations.messages.find((m)=> m.text.includes(stringMatcher))
   
-  // We posted about the PR before 
   if (message !== undefined){
-    await client.chat.update({ token: botToken, channel: channelId , ts: message.ts, text: `@here ${payload.pull_request.url} ${payload.pull_request.title}`})
-    //We have not posted about the PR
+    await client.chat.update({ token: botToken, channel: channelId , ts: message.ts, text: messages})
   } else {
-  await client.chat.postMessage({ channel: channelId, text: `@here ${payload.pull_request.url} ${payload.pull_request.title}` })
+    await client.chat.postMessage({ channel: channelId, text: messages })
+  }
+}
+
+const reply = async () => {
+    // eslint-disable-next-line no-unused-vars
+  const {payload} = github.context
+  const channelId = core.getInput('channel-id');
+  const botToken = core.getInput('slack-bot-token');
+  // eslint-disable-next-line no-eval
+  const stringMatcher = eval(core.getInput('string-matcher'));
+  // eslint-disable-next-line no-eval
+  const messages = eval(core.getInput('message'));
+
+  const client = new WebClient(botToken);
+  const conversations = await client.conversations.history({ token: botToken, channel: channelId })
+  const message = conversations.messages.find((m)=> m.text.includes(stringMatcher))
+  
+  if (message !== undefined){
+    await client.chat.postMessage({ token: botToken, channel: channelId , thread_ts: message.ts, text: messages})
+  } else {
+    core.setFailed('Message could not be found');
+  }
+}
+
+
+const react = async () => {
+  // eslint-disable-next-line no-unused-vars
+  const {payload} = github.context
+  const channelId = core.getInput('channel-id');
+  const botToken = core.getInput('slack-bot-token');
+
+  // eslint-disable-next-line no-eval
+  const stringMatcher = eval(core.getInput('string-matcher'));
+  // eslint-disable-next-line no-eval
+  const messages = core.getInput('message');
+
+  const client = new WebClient(botToken);
+  const conversations = await client.conversations.history({ token: botToken, channel: channelId })
+  const message = conversations.messages.find((m)=> m.text.includes(stringMatcher))
+  
+  if (message !== undefined){
+    await client.reactions.add({ token: botToken, channel: channelId, name: messages })
+  } else {
+    core.setFailed('Message could not be found');
   }
 }
 
@@ -45,14 +96,14 @@ async function run() {
       case POST_ACTION:
         await post()
         break;
-      case EDIT_ACTION:
-        await edit()
+      case UPDATE_ACTION:
+        await update()
         break;
-      case BUMP_ACTION:
-        console.log("BUMP")
+      case REPLY_ACTION:
+        await reply()
         break;
       case REACT_ACTION:
-        console.log("REACT")
+        await react()
         break;
       default:
         core.setFailed('Action does not exist');
