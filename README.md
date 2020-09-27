@@ -1,18 +1,18 @@
 # Slack Action
-> Lightweight github action for posting to slack.
+> Lightweight github action for posting to slack (using [node-slack-sdk](https://github.com/slackapi/node-slack-sdk)).
 
 Slack action allows you interact with slack while exposing [Github's payload](https://developer.github.com/webhooks/event-payloads/). Pairing with a slack bot, this action is able to `post`, `update`, `react` and `reply` to messages while customizing the channel and message matcher / template.
 
 The main use cases for using this actions is:
 1. To monitor all merges to a master branch for tracking completed work (_closed pull requests_). See our example [here](https://github.com/jermainezhimin/slack-actions/blob/master/.github/workflows/post-prs.yml)
-2. [WIP] To post/update notifications when pull requests are ready for review.
+2. To post/update notifications when pull requests are ready for review.
 
 ## Usage
 
 You can use this action after any other action. Here is an example setup of this action:
 
 1. Create a `.github/workflows/slack-actions.yml` file in your GitHub repo.
-2. Add the following code to the `slack-actions.yml` file.
+2. Add the following code to the `slack-actions.yml` file. Note that the message is javascript code that get executed and provided the `payload` variable which is [provided by github](https://developer.github.com/webhooks/event-payloads/)
 
 ```yml
 on: push
@@ -31,7 +31,7 @@ name: Posting to slack
         `
 ```
 
-3. Create `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` secret using [GitHub Action's Secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository). You can [generate a Slack incoming webhook token from here](https://slack.com/apps/A0F7XDUAZ-incoming-webhooks).
+3. Create `SLACK_BOT_TOKEN` and `SLACK_CHANNEL_ID` secret using [GitHub Action's Secret](https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets#creating-encrypted-secrets-for-a-repository). You will need to [generate a Slack bot token from here](https://api.slack.com/authentication/token-types#bot) and assign it the appropriate authorization(see `Setting up Actions`) and [locate the channel ID](https://stackoverflow.com/a/57246565/9932533).
 
 ## Environment Variables
 
@@ -39,10 +39,72 @@ By default, action is designed to run with minimal configuration but you can alt
 
 Variable          | Default                                               | Purpose
 ------------------|-------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------
-action     | -                    | Actions available in slack actions. We currently only support `post`
-message    | -                                               | The message template in `Javascript` to post, we expose the payload from github as `payload` variableß
+action     | -                    | Actions available in slack actions. We currently support `post`, `update`,`reply` and `react`
+message    | -                                               | The message template in `Javascript` to post, we expose the payload from github as `payload` variable
 slack-bot-token        | - | User/Bot slack authentication token
-channel-id  | -                                                     | Slack to post to, to get the channel id follow this [guide](https://stackoverflow.com/a/57246565/9932533) 
+channel-id  | -                                                     | Slack channel to post to, to get the channel id follow this [guide](https://stackoverflow.com/a/57246565/9932533) 
+
+## Setting up Actions
+
+### 1. POST
+
+`post` uses Slack's [`chat.postMessage`](https://api.slack.com/methods/chat.postMessage) API and will require the `chat:write` scope.
+
+Posts the `message` to given channel(_set via `channel_id`_).
+
+Arguments
+```
+1. action: post
+2. message: message in the form of javascript
+3. slack-bot-token: Bot token to post as
+4. channel-id: Channel to post to
+```
+
+### 2. UPDATE
+
+`update` uses Slack's [`chat.postMessage`](https://api.slack.com/methods/chat.postMessage) and [`conversations.history`](https://api.slack.com/methods/conversations.history) API and will require the `chat:write`, `channels:history`,  `groups:history`, `im:history` and `mpim:history` scope.
+
+This action uses the given `string-matcher` and searches the first message (_in the past 100 messages_) and *replaces* it with the given `message`.
+
+Arguments
+```
+1. action: update
+2. message: message in the form of javascript
+3. string-matcher: javascript template
+4. slack-bot-token: Bot token to post as
+5. channel-id: Channel to post to
+```
+
+### 3. REPLY
+
+`reply` uses Slack's [`chat.postMessage`](https://api.slack.com/methods/chat.postMessage) and [`conversations.history`](https://api.slack.com/methods/conversations.history) API and will require the `chat:write`, `channels:history`,  `groups:history`, `im:history` and `mpim:history` scope.
+
+This action uses the given `string-matcher` and searches the first message (_in the past 100 messages_) and *replies* to it with the given `message`.
+
+Arguments
+```
+1. action: reply
+2. message: <message in the form of javascript>
+3. string-matcher: <string to match against using `includes`>
+4. slack-bot-token: <Bot token to post as>
+5. channel-id: <Channel to post to>
+```
+
+### 4. REACT
+
+`react` uses Slack's [`reactions.add`](https://api.slack.com/methods/reactions.add) and [`conversations.history`](https://api.slack.com/methods/conversations.history) API and will require the `reaction:write`, `channels:history`,  `groups:history`, `im:history` and `mpim:history` scope.
+
+This action uses the given `string-matcher` and searches the first message (_in the past 100 messages_) and *replies* to it with the given `message` as the emoji name.
+
+Arguments
+```
+1. action: react
+2. message: <emoji name>
+3. string-matcher: <string to match against using `includes`>
+4. slack-bot-token: <Bot token to post as>
+5. channel-id: Channel to post to
+```
+
 
 ### Building / Deploying / Publishing
 
