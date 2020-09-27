@@ -13,7 +13,7 @@ inputs:
   message:
     description: 'Slack message template'
     required: true
-string-matcher:
+  string-matcher:
     description: 'Message string matcher to find first message containing'
     required: false
 runs:

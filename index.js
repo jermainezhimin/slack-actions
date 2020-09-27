@@ -90,7 +90,6 @@ const react = async () => {
 
 async function run() {
   const action = core.getInput('action');
-
   try {
     switch(action) {
       case POST_ACTION:
