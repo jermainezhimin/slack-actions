@@ -61,7 +61,7 @@ const reply = async () => {
   if (message !== undefined){
     await client.chat.postMessage({ token: botToken, channel: channelId , thread_ts: message.ts, text: messages})
   } else {
-    core.setFailed('Message could not be found');
+    core.info('Message could not be found');
   }
 }
 
@@ -98,7 +98,7 @@ const react = async () => {
       timestamp: message.ts  // The timestamp is the message's unique identifier
     })
   } else {
-    core.setFailed('Message could not be found');
+    core.info('Message could not be found');
   }
 }
 
