@@ -123,8 +123,12 @@ async function run() {
         core.setFailed('Action does not exist');
         break;
     }
-  } catch (error){
-    core.setFailed(error.message);
+  } catch (error) {
+    if (error.error == "already_reacted") {
+      core.info("Already reacted, no action taken.")
+    } else {
+      core.setFailed(error.message);
+    }
   }
 }
 
