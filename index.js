@@ -124,7 +124,7 @@ async function run() {
         break;
     }
   } catch (error) {
-    if (error.error == "already_reacted") {
+    if (error.message == "An API error occurred: already_reacted") {
       core.info("Already reacted, no action taken.")
     } else {
       core.setFailed(error.message);

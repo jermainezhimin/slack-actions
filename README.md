@@ -25,7 +25,7 @@ name: Posting to slack
       slack-bot-token: ${{ secrets.SLACK_BOT_TOKEN }}
       channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
       action: post
-      message: | 
+      message: |
         `:star-struck: New commits in _*dev*_!\n
         ${payload.commits.map((commit)=>`• [_${commit.author.name}_] <${commit.url}|${commit.message}>\n`)}
         `
@@ -42,7 +42,7 @@ Variable          | Default                                               | Purp
 action     | -                    | Actions available in slack actions. We currently support `post`, `update`,`reply` and `react`
 message    | -                                               | The message template in `Javascript` to post, we expose the payload from github as `payload` variable
 slack-bot-token        | - | User/Bot slack authentication token
-channel-id  | -                                                     | Slack channel to post to, to get the channel id follow this [guide](https://stackoverflow.com/a/57246565/9932533) 
+channel-id  | -                                                     | Slack channel to post to, to get the channel id follow this [guide](https://stackoverflow.com/a/57246565/9932533)
 
 ## Setting up Actions
 
@@ -105,19 +105,18 @@ Arguments
 3. channel-id: Channel to post to
 ```
 
-
-### Building / Deploying / Publishing
-
-To publish a new version, we will have to build the project locally with `npm run build` and commit the `dist/` folder to [slack-actions](https://github.com/jermainezhimin/slack-actions). 
-
-we will next have to tag the commit by running `git tag -m "<tag message>" <tag name>` (_prefix tags with v and follow [semantic versioning](https://semver.org)_) and `git push --tags` to push the tag to the remote origin.
-
-If all tests pass, we will then manually [create a release](https://docs.github.com/en/enterprise/2.13/user/articles/creating-releases). Please ensure the changelog and release title is approprately filled.
-
 ## Contributing
 
 If you'd like to contribute, please fork the repository and use a feature
 branch. Pull requests are warmly welcome.
+
+### Building / Deploying / Publishing
+
+To publish a new version, we will have to build the project locally with `npm run build` and commit the `dist/` folder to [slack-actions](https://github.com/jermainezhimin/slack-actions).
+
+we will next have to tag the commit by running `git tag -m "<tag message>" <tag name>` (_prefix tags with v and follow [semantic versioning](https://semver.org)_) and `git push --tags` to push the tag to the remote origin.
+
+If all tests pass, we will then manually [create a release](https://docs.github.com/en/enterprise/2.13/user/articles/creating-releases). Please ensure the changelog and release title is approprately filled.
 
 ## Links
 
